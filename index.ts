@@ -30,7 +30,13 @@ async function setup(): Promise<void> {
   await listenToDBusChanges(accessor);
 
   // Start listening to messages on serial
-  parser.on('data', handleSerialData.bind(null, accessor));
+  parser.on('data', (data: SerialMessage) => {
+    try {
+      handleSerialData(accessor, data);
+    } catch (error) {
+      console.error(error);
+    }
+  });
 }
 
 async function listenToDBusChanges(accessor: MPRISAccessor): Promise<void> {
