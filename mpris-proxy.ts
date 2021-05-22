@@ -1,5 +1,6 @@
 import type { MessageBus, ProxyObject } from 'dbus-next';
 import { Variant } from "dbus-next";
+import { LoopStatus } from "./loop-status";
 
 const introspectedMpris = `
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
@@ -128,6 +129,9 @@ export interface MPRIS {
 
   shuffle(): Promise<boolean>;
   setShuffle(value: boolean): Promise<void>;
+
+  loop(): Promise<LoopStatus>;
+  setLoop(value: LoopStatus): Promise<void>;
 }
 
 export const EMPTY_MPRIS: MPRIS = {
@@ -149,6 +153,9 @@ export const EMPTY_MPRIS: MPRIS = {
 
   shuffle: () => Promise.resolve(false),
   setShuffle: _ => Promise.resolve(),
+
+  loop: () => Promise.resolve(LoopStatus.NONE),
+  setLoop: _ => Promise.resolve(),
 };
 
 export async function getMPRIS(bus: MessageBus, interfaceName: string): Promise<MPRIS> {
@@ -171,7 +178,10 @@ export async function getMPRIS(bus: MessageBus, interfaceName: string): Promise<
     setVolume: value => properties.Set(playerName, 'Volume', new Variant('d', value)),
 
     shuffle: () => properties.Get(playerName, 'Shuffle').then((variant: Variant) => variant.value),
-    setShuffle: value => properties.Set(playerName, 'Shuffle', new Variant('b', value))
+    setShuffle: value => properties.Set(playerName, 'Shuffle', new Variant('b', value)),
+
+    loop: () => properties.Get(playerName, 'LoopStatus').then((variant: Variant) => variant.value),
+    setLoop: value => properties.Set(playerName, 'LoopStatus', new Variant('s', value)),
   };
 }
 

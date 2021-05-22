@@ -4,6 +4,7 @@ import Readline from '@serialport/parser-readline';
 import dbus from "dbus-next";
 import { SerialMessage } from "./serial-message";
 import { getMPRIS, getMPRISList, MPRISAccessor } from "./mpris-proxy";
+import { nextLoopStatus } from "./loop-status";
 
 if (!process.env.TTY_PATH) {
   console.error('No path in TTY_PATH');
@@ -82,9 +83,10 @@ async function handleSerialData(accessor: MPRISAccessor, data: SerialMessage) {
       console.info(accessor.player.interfaceName);
       break;
     case SerialMessage.EQUAL:
+      await accessor.player.setShuffle(!(await accessor.player.shuffle()))
       break;
     case SerialMessage.REPEAT:
-      await accessor.player.setShuffle(!(await accessor.player.shuffle()))
+      await accessor.player.setLoop(nextLoopStatus(await accessor.player.loop()));
       break;
   }
 }
