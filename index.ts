@@ -56,7 +56,7 @@ async function handleSerialData(accessor: MPRISAccessor, data: SerialMessage) {
       // TODO
       break;
     case SerialMessage.STOP:
-      await accessor.player.stop();
+      // Lights
       break;
     case SerialMessage.VOLUME_PLUS:
       await accessor.player.setVolume(await accessor.player.volume() + volumeDelta);
@@ -75,13 +75,16 @@ async function handleSerialData(accessor: MPRISAccessor, data: SerialMessage) {
       break;
     case SerialMessage.DOWN:
       accessor.prevPlayer();
+      console.info(accessor.player.interfaceName);
       break;
     case SerialMessage.UP:
       accessor.nextPlayer();
+      console.info(accessor.player.interfaceName);
       break;
     case SerialMessage.EQUAL:
       break;
     case SerialMessage.REPEAT:
+      await accessor.player.setShuffle(!(await accessor.player.shuffle()))
       break;
   }
 }

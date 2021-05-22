@@ -125,6 +125,9 @@ export interface MPRIS {
 
   volume(): Promise<number>;
   setVolume(value: number): Promise<void>;
+
+  shuffle(): Promise<boolean>;
+  setShuffle(value: boolean): Promise<void>;
 }
 
 export const EMPTY_MPRIS: MPRIS = {
@@ -143,6 +146,9 @@ export const EMPTY_MPRIS: MPRIS = {
 
   volume: () => Promise.resolve(0),
   setVolume: _ => Promise.resolve(),
+
+  shuffle: () => Promise.resolve(false),
+  setShuffle: _ => Promise.resolve(),
 };
 
 export async function getMPRIS(bus: MessageBus, interfaceName: string): Promise<MPRIS> {
@@ -162,7 +168,10 @@ export async function getMPRIS(bus: MessageBus, interfaceName: string): Promise<
     playPause: () => playerInterface.PlayPause(),
 
     volume: () => properties.Get(playerName, 'Volume').then((variant: Variant) => variant.value),
-    setVolume: value => properties.Set(playerName, 'Volume', new Variant('d', value))
+    setVolume: value => properties.Set(playerName, 'Volume', new Variant('d', value)),
+
+    shuffle: () => properties.Get(playerName, 'Shuffle').then((variant: Variant) => variant.value),
+    setShuffle: value => properties.Set(playerName, 'Shuffle', new Variant('b', value))
   };
 }
 
