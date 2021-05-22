@@ -18,8 +18,14 @@ const bus = dbus.sessionBus();
 
 setup();
 
+function printActive(accessor: MPRISAccessor): void {
+  console.info(`Active player: ${accessor.player.toString()}`);
+}
+
 async function setup(): Promise<void> {
   const accessor = new MPRISAccessor(await getMPRISList(bus));
+
+  printActive(accessor);
 
   await listenToDBusChanges(accessor);
 
@@ -76,11 +82,11 @@ async function handleSerialData(accessor: MPRISAccessor, data: SerialMessage) {
       break;
     case SerialMessage.DOWN:
       accessor.prevPlayer();
-      console.info(accessor.player.interfaceName);
+      printActive(accessor);
       break;
     case SerialMessage.UP:
       accessor.nextPlayer();
-      console.info(accessor.player.interfaceName);
+      printActive(accessor);
       break;
     case SerialMessage.EQUAL:
       await accessor.player.setShuffle(!(await accessor.player.shuffle()))

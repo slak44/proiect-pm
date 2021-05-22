@@ -132,6 +132,8 @@ export interface MPRIS {
 
   loop(): Promise<LoopStatus>;
   setLoop(value: LoopStatus): Promise<void>;
+
+  toString(): string;
 }
 
 export const EMPTY_MPRIS: MPRIS = {
@@ -167,6 +169,8 @@ export async function getMPRIS(bus: MessageBus, interfaceName: string): Promise<
   return {
     interfaceName,
     proxy: playerObject,
+    toString: () => interfaceName.replace('org.mpris.MediaPlayer2.', ''),
+
     next: () => playerInterface.Next(),
     previous: () => playerInterface.Previous(),
     pause: () => playerInterface.Pause(),
@@ -238,6 +242,7 @@ export class MPRISAccessor {
   }
 
   public prevPlayer(): void {
-    this.currentPlayerIdx = (this.currentPlayerIdx - 1) % (this.mprisList.length || 1);
+    const length = this.mprisList.length || 1;
+    this.currentPlayerIdx = (this.currentPlayerIdx - 1 + length) % length;
   }
 }
