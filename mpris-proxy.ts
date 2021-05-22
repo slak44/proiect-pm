@@ -111,6 +111,7 @@ export async function mprisProxy(bus: MessageBus, interfaceName: string): Promis
 }
 
 /**
+ * https://www.freedesktop.org/wiki/Specifications/mpris-spec/
  * https://wiki.archlinux.org/index.php/MPRIS
  */
 export interface MPRIS {
