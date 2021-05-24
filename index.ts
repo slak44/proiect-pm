@@ -66,7 +66,7 @@ async function listenToDBusChanges(accessor: MPRISAccessor): Promise<void> {
 }
 
 async function handleSerialData(accessor: MPRISAccessor, data: SerialMessage) {
-  console.info(data);
+  console.info(`Received message: ${data}`);
   const volumeDelta = 0.05;
 
   switch (data) {
