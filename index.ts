@@ -5,6 +5,10 @@ import dbus from "dbus-next";
 import { SerialMessage } from "./serial-message";
 import { getMPRIS, getMPRISList, MPRISAccessor } from "./mpris-proxy";
 import { nextLoopStatus } from "./loop-status";
+import * as cp from 'child_process';
+import * as util from 'util';
+
+const execFile = util.promisify(cp.execFile);
 
 if (!process.env.TTY_PATH) {
   console.error('No path in TTY_PATH');
@@ -62,11 +66,12 @@ async function listenToDBusChanges(accessor: MPRISAccessor): Promise<void> {
 }
 
 async function handleSerialData(accessor: MPRISAccessor, data: SerialMessage) {
+  console.info(data);
   const volumeDelta = 0.05;
 
   switch (data) {
     case SerialMessage.POWER:
-      // TODO
+      // Power button
       break;
     case SerialMessage.STOP:
       // Lights
@@ -99,6 +104,23 @@ async function handleSerialData(accessor: MPRISAccessor, data: SerialMessage) {
       break;
     case SerialMessage.REPEAT:
       await accessor.player.setLoop(nextLoopStatus(await accessor.player.loop()));
+      break;
+    case SerialMessage.ZERO:
+    case SerialMessage.ONE:
+    case SerialMessage.TWO:
+    case SerialMessage.THREE:
+    case SerialMessage.FOUR:
+    case SerialMessage.FIVE:
+    case SerialMessage.SIX:
+    case SerialMessage.SEVEN:
+    case SerialMessage.EIGHT:
+    case SerialMessage.NINE:
+      const script = `./script${data}.sh`;
+      try {
+        await execFile(script, []);
+      } catch (scriptError) {
+        console.error('Failed to run script: ' + scriptError);
+      }
       break;
   }
 }
